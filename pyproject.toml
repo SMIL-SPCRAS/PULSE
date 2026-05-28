@@ -1,0 +1,88 @@
+[project]
+name = "pulse"
+version = "1.0.0"
+description = "Gradio application for speech-based estimation of psychological characteristics using the PULSE framework."
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "faster-whisper>=1.2.1",
+    "gradio>=6.15.0,<7.0.0",
+    "huggingface-hub>=1.16.4",
+    "numpy>=2.4.6",
+    "plotly>=6.7.0",
+    "psutil>=7.2.2",
+    "torch>=2.12.0",
+    "torchcodec>=0.13.0",
+    "transformers>=5.9.0",
+]
+
+[dependency-groups]
+dev = [ "deptry>=0.25.1,<0.26.0", "mypy>=2.1.0,<3.0.0", "pre-commit>=4.6.0", "ruff>=0.15.14" ]
+mamba-linux = [ "mamba-ssm>=2.3.2.post1" ]
+mamba-macos = [ "mamba-ssm-macos>=1.0.2" ]
+
+[tool.uv]
+package = false
+required-version = ">=0.11.14"
+default-groups = [ "dev" ]
+
+[tool.ruff]
+line-length = 120
+target-version = "py314"
+show-fixes = true
+src = [ "." ]
+
+exclude = [ ".venv", "__pycache__", ".mypy_cache", ".ruff_cache", ".pytest_cache", "build", "dist" ]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = [ "E", "W", "F", "I", "B", "UP", "SIM", "C4", "A", "TID", "RUF" ]
+
+ignore = [ "E501", "E111", "E114", "E117", "W191", "RUF003" ]
+
+fixable = [ "ALL" ]
+unfixable = [  ]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [ "F401" ]
+
+[tool.ruff.lint.isort]
+known-first-party = [ "pulse" ]
+combine-as-imports = true
+force-sort-within-sections = true
+split-on-trailing-comma = true
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.mypy]
+python_version = "3.14"
+files = [ "app.py", "pulse" ]
+exclude = "(^\\.venv/|^build/|^dist/)"
+strict = true
+pretty = true
+show_error_codes = true
+show_column_numbers = true
+warn_unused_ignores = true
+disallow_any_generics = true
+no_implicit_reexport = true
+warn_return_any = true
+namespace_packages = true
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = [ "faster_whisper", "faster_whisper.*", "psutil.*", "plotly.*", "torchcodec.*" ]
+ignore_missing_imports = true
+
+[tool.deptry.per_rule_ignores]
+DEP002 = [ "torch" ]
+
+[tool.deptry.package_module_name_map]
+faster-whisper = "faster_whisper"
+mamba-ssm = "mamba_ssm"
+mamba-ssm-macos = "mamba_ssm"

@@ -1,0 +1,467 @@
+[App]
+TITLE = "PULSE"
+SUBTITLE = "Psychological Characteristics Unified Learning via Speech-based Estimation"
+DESCRIPTION = "A Gradio application for speech-based estimation of psychological characteristics using the PULSE framework."
+VERSION = "1.0.0"
+CSS_PATH = "app.css"
+
+[Server]
+NAME = "127.0.0.1"
+PORT = 7860
+
+[AudioValidation]
+MIN_DURATION_SECONDS = 1.0
+MAX_DURATION_SECONDS = 60.0
+RECOMMENDED_SAMPLE_RATE = 16000
+RECOMMENDED_NUM_CHANNELS = 1
+
+[AudioDecoding]
+TARGET_SAMPLE_RATE = 16000
+TARGET_NUM_CHANNELS = 1
+
+[AudioPreprocessing]
+TARGET_DURATION_SECONDS = 15.0
+ENABLE_PEAK_NORMALIZATION = true
+PEAK_NORMALIZATION_EPS = 1e-8
+
+[FeatureExtraction]
+WAV2VEC_MODEL_NAME = "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim"
+WAV2VEC_HF_MODEL_ID = "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim"
+WAV2VEC_MODEL_DIR = "wav2vec2/audeering-wav2vec2-large-robust-12-ft-emotion-msp-dim"
+SAMPLE_RATE = 16000
+DEVICE = "auto"
+LOCAL_FILES_ONLY = true
+
+[Model]
+USE_REAL_MODEL = true
+CHECKPOINT_FILE = "pulse/best_model.pt"
+HF_CHECKPOINT_REPO_ID = "DmitryRyumin/PULSE"
+HF_CHECKPOINT_FILENAME = "best_model.pt"
+DEVICE = "auto"
+INPUT_DIM = 1024
+D_MODEL = 256
+NUM_LAYERS = 4
+DROPOUT = 0.1
+MAX_LEN = 15000
+MAMBA_D_STATE = 8
+MAMBA_D_CONV = 3
+MAMBA_EXPAND = 2
+
+[Attribution]
+ENABLE_REAL_ATTRIBUTION = true
+FALLBACK_TO_PLACEHOLDER = true
+METHOD = "input_x_gradient"
+REDUCTION = "sum_abs"
+MAX_POINTS = 256
+EPS = 1e-12
+ENABLE_SPEECH_MASK = true
+SPEECH_MASK_FRAME_MS = 25.0
+SPEECH_MASK_HOP_MS = 10.0
+SPEECH_MASK_THRESHOLD_RATIO = 0.16
+SPEECH_MASK_MIN_ACTIVE_RATIO = 0.005
+SPEECH_MASK_CONTEXT_SECONDS = 0.10
+SPEECH_MASK_SMOOTHING_SECONDS = 0.07
+SPEECH_MASK_SILENCE_FLOOR = 0.0
+LOG_SPEECH_MASK = true
+SMOOTHGRAD_SAMPLES = 6
+SMOOTHGRAD_NOISE_STD_RATIO = 0.02
+SMOOTHGRAD_INCLUDE_CLEAN_SAMPLE = true
+
+[Visualization]
+WAVEFORM_MAX_POINTS = 1200
+TRANSCRIPT_MAX_CHARS = 2500
+TRANSCRIPT_WRAP = 220
+SHOW_SPEECH_ACTIVITY = true
+
+[Transcription]
+ENABLE = true
+FALLBACK_TO_EMPTY = true
+MODEL_NAME = "large-v3"
+HF_MODEL_ID = "Systran/faster-whisper-large-v3"
+MODEL_DIR = "faster-whisper/large-v3"
+LOCAL_FILES_ONLY = true
+DEVICE = "cpu"
+COMPUTE_TYPE = "int8"
+CPU_THREADS = 8
+NUM_WORKERS = 1
+LANGUAGE = "auto"
+BEAM_SIZE = 5
+BEST_OF = 5
+TEMPERATURE = 0.0
+WORD_TIMESTAMPS = true
+VAD_FILTER = true
+VAD_MIN_SILENCE_DURATION_MS = 500
+CONDITION_ON_PREVIOUS_TEXT = true
+INITIAL_PROMPT = ""
+
+[Progress]
+STAGES = [
+    { key = "validation", weight = 1.0 },
+    { key = "decoding", weight = 1.0 },
+    { key = "preprocessing", weight = 1.0 },
+    { key = "waveform", weight = 1.0 },
+    { key = "whisper_loading", weight = 10.0 },
+    { key = "transcription", weight = 20.0 },
+    { key = "wav2vec_loading", weight = 8.0 },
+    { key = "feature_extraction", weight = 8.0 },
+    { key = "pulse_model_loading", weight = 8.0 },
+    { key = "model_inference", weight = 2.0 },
+    { key = "output_adaptation", weight = 1.0 },
+    { key = "attribution", weight = 36.0 },
+    { key = "packaging", weight = 2.0 },
+    { key = "visualization", weight = 1.0 },
+]
+
+[StaticPaths]
+EXAMPLES = "examples"
+IMAGES = "static/images"
+MODELS = "models"
+
+[Images]
+LANGUAGES = [ "flags/en.svg", "flags/ru.svg" ]
+
+[Examples]
+AUDIO = [
+    "01_emotion_happiness.wav",
+    "02_emotion_fear.wav",
+    "03_interview_question_01.wav",
+    "04_interview_question_03.wav",
+    "05_speech_segment_01.wav",
+    "06_speech_segment_02.wav",
+    "07_speech_segment_03.wav",
+    "08_speech_segment_04.wav",
+]
+
+[Languages]
+CHOICES = [ "English", "Русский" ]
+DEFAULT = "English"
+
+[Tabs]
+APP = [ "⭐ Application", "⭐ Приложение" ]
+SETTINGS = [ "⚙️ Settings", "⚙️ Настройки" ]
+ABOUT_APP = [ "💡 About PULSE", "💡 О PULSE" ]
+AUTHORS = [ "🎭 About the Authors", "🎭 Об авторах" ]
+REQUIREMENTS = [ "📋 Requirements", "📋 Зависимости" ]
+
+[Texts]
+APP_TITLE = [ "PULSE", "PULSE" ]
+APP_SUBTITLE = [
+    "Psychological Characteristics Unified Learning via Speech-based Estimation",
+    "Psychological Characteristics Unified Learning via Speech-based Estimation",
+]
+ABOUT_TITLE = [ "About PULSE", "О PULSE" ]
+ABOUT_DESCRIPTION = [
+    "PULSE is a speech-based framework for unified estimation of psychological characteristics.",
+    "PULSE — это фреймворк для унифицированной оценки психологических характеристик на основе речевых данных.",
+]
+ABOUT_PLACEHOLDER = [
+    "This tab will contain a detailed description of the PULSE framework, its intended use cases, limitations, and methodological notes.",
+    "В этой вкладке будет размещено подробное описание фреймворка PULSE, сценариев применения, ограничений и методологических замечаний.",
+]
+AUTHORS_TITLE = [ "Authors", "Авторы" ]
+REQUIREMENTS_TITLE = [ "Requirements", "Зависимости" ]
+REQUIREMENTS_PLACEHOLDER = [
+    "The application requirements will be added here.",
+    "Зависимости приложения будут добавлены позже.",
+]
+EXAMPLES_PLACEHOLDER = [
+    "Example audio samples will be added later.",
+    "Примеры аудиофрагментов будут добавлены позже.",
+]
+STATUS_READY = [
+    "Ready. Upload or record an audio sample to start.",
+    "Готово. Загрузите или запишите аудиофрагмент, чтобы начать.",
+]
+STATUS_AUDIO_READY = [
+    "Audio sample is ready. Select at least one task and run the analysis.",
+    "Аудиофрагмент готов. Выберите хотя бы одну задачу и запустите анализ.",
+]
+STATUS_NO_TASKS = [
+    "Select at least one task to run the analysis.",
+    "Выберите хотя бы одну задачу, чтобы запустить анализ.",
+]
+STATUS_ANALYSIS_COMPLETED = [ "Analysis completed successfully.", "Анализ успешно завершен." ]
+STATUS_CLEARED = [ "Application state has been cleared.", "Состояние приложения очищено." ]
+PLOT_PREDICTIONS_TITLE = [ "PULSE analysis results", "Результаты анализа PULSE" ]
+PLOT_TEMPORAL_IMPORTANCE_TITLE = [ "Temporal importance", "Временная значимость" ]
+PLOT_NO_TASK_SELECTED = [ "No task selected", "Задача не выбрана" ]
+PLOT_OUTPUT_LABEL = [ "Output label", "Выходной класс" ]
+PLOT_SCORE = [ "Score", "Оценка" ]
+PLOT_LABEL = [ "Label", "Класс" ]
+PLOT_TIME = [ "Time", "Время" ]
+PLOT_IMPORTANCE = [ "Importance", "Значимость" ]
+AUDIO_INFO_UNAVAILABLE = [ "Audio metadata is unavailable.", "Метаданные аудио недоступны." ]
+STATUS_AUDIO_INVALID = [ "Audio sample is not suitable for analysis.", "Аудиофрагмент не подходит для анализа." ]
+AUDIO_VALIDATION_OK = [ "Audio validation passed.", "Проверка аудио пройдена." ]
+AUDIO_VALIDATION_FILE_NOT_FOUND = [ "Audio file was not found.", "Аудиофайл не найден." ]
+AUDIO_VALIDATION_READ_FAILED = [ "Audio metadata could not be read.", "Не удалось прочитать метаданные аудио." ]
+AUDIO_VALIDATION_EMPTY_FILE = [ "Audio file is empty.", "Аудиофайл пустой." ]
+AUDIO_VALIDATION_DURATION_UNAVAILABLE = [ "Audio duration is unavailable.", "Длительность аудио недоступна." ]
+AUDIO_VALIDATION_TOO_SHORT = [
+    "Audio is too short: {actual:.2f} s. Minimum required: {expected:.2f} s.",
+    "Аудио слишком короткое: {actual:.2f} с. Минимально требуется: {expected:.2f} с.",
+]
+AUDIO_VALIDATION_TOO_LONG = [
+    "Audio is too long: {actual:.2f} s. Maximum allowed: {expected:.2f} s.",
+    "Аудио слишком длинное: {actual:.2f} с. Максимально допустимо: {expected:.2f} с.",
+]
+AUDIO_VALIDATION_SAMPLE_RATE_UNAVAILABLE = [ "Sample rate is unavailable.", "Частота дискретизации недоступна." ]
+AUDIO_VALIDATION_SAMPLE_RATE_WARNING = [
+    "Sample rate is {actual} Hz. Recommended value: {expected} Hz.",
+    "Частота дискретизации: {actual} Гц. Рекомендуемое значение: {expected} Гц.",
+]
+AUDIO_VALIDATION_CHANNELS_UNAVAILABLE = [
+    "Number of audio channels is unavailable.",
+    "Количество аудиоканалов недоступно.",
+]
+AUDIO_VALIDATION_CHANNELS_WARNING = [
+    "Number of channels is {actual}. Recommended value: {expected}.",
+    "Количество каналов: {actual}. Рекомендуемое значение: {expected}.",
+]
+STATUS_ANALYSIS_SUMMARY = [
+    "Processing time: {elapsed:.2f} s · Device: {device}",
+    "Время обработки: {elapsed:.2f} с · Устройство: {device}",
+]
+PLOT_AMPLITUDE = [ "Amplitude", "Амплитуда" ]
+PLOT_SECOND_SUFFIX = [ "s", "с" ]
+STATUS_ANALYSIS_RUNNING = [ "Analysis is running. Please wait ...", "Выполняется анализ. Пожалуйста, подождите ..." ]
+ANALYSIS_RUNNING_HINT = [
+    "The interface is temporarily locked to keep the results consistent.",
+    "Интерфейс временно заблокирован, чтобы сохранить согласованность результатов.",
+]
+PLOT_SPEECH_ACTIVITY = [ "Speech activity", "Речевая активность" ]
+ANALYSIS_PROGRESS_SUBTITLE = [
+    "The pipeline is running step by step. The interface is locked until the results are ready.",
+    "Конвейер анализа выполняется поэтапно. Интерфейс заблокирован до готовности результатов.",
+]
+ANALYSIS_PROGRESS_NOTE = [
+    "This may take longer when SmoothGrad attribution and Whisper transcription are enabled.",
+    "Выполнение может занять больше времени при включённых SmoothGrad-атрибуции и Whisper-транскрипции.",
+]
+STATUS_STAGE_TIMINGS_TITLE = [ "Stage timings", "Время выполнения этапов" ]
+PIPELINE_STAGE_VALIDATION = [ "Validation", "Проверка аудио" ]
+PIPELINE_STAGE_DECODING = [ "Audio decoding", "Декодирование аудио" ]
+PIPELINE_STAGE_PREPROCESSING = [ "Preprocessing", "Предобработка" ]
+PIPELINE_STAGE_WAVEFORM = [ "Waveform preparation", "Подготовка осциллограммы" ]
+PIPELINE_STAGE_TRANSCRIPTION = [ "Whisper transcription", "Whisper-транскрипция" ]
+PIPELINE_STAGE_FEATURE_EXTRACTION = [ "Wav2Vec2 feature extraction", "Извлечение признаков Wav2Vec2" ]
+PIPELINE_STAGE_MODEL_INFERENCE = [ "Multitask model inference", "Инференс многозадачной модели" ]
+PIPELINE_STAGE_OUTPUT_ADAPTATION = [ "Output adaptation", "Адаптация выходов" ]
+PIPELINE_STAGE_ATTRIBUTION = [ "Temporal attribution", "Временная атрибуция" ]
+PIPELINE_STAGE_PACKAGING = [ "Result packaging", "Формирование результатов" ]
+PIPELINE_STAGE_QUEUED = [ "Queued", "Ожидание запуска" ]
+PIPELINE_STAGE_WHISPER_LOADING = [ "Whisper model loading", "Загрузка модели Whisper" ]
+PIPELINE_STAGE_WAV2VEC_LOADING = [ "Wav2Vec2 model loading", "Загрузка модели Wav2Vec2" ]
+PIPELINE_STAGE_PULSE_MODEL_LOADING = [ "PULSE model loading", "Загрузка модели PULSE" ]
+PIPELINE_STAGE_VISUALIZATION = [ "Visualization rendering", "Построение визуализаций" ]
+ANALYSIS_PROGRESS_ELAPSED = [ "Elapsed", "Прошло" ]
+ANALYSIS_PROGRESS_STAGE = [ "Current stage", "Текущий этап" ]
+ANALYSIS_PROGRESS_PERCENT = [ "Progress", "Прогресс" ]
+ANALYSIS_PROGRESS_COMPLETED = [ "Completed", "Завершено" ]
+ANALYSIS_PROGRESS_DEVICE = [ "Device", "Устройство" ]
+SETTINGS_TITLE = [ "Settings", "Настройки" ]
+SETTINGS_DESCRIPTION = [
+    "Runtime controls for loaded model caches. These actions do not change configuration values; they only reset already loaded runtime objects.",
+    "Управление runtime-кэшами загруженных моделей. Эти действия не изменяют значения конфигурации, а только сбрасывают уже загруженные runtime-объекты.",
+]
+SETTINGS_RUNTIME_CACHE_TITLE = [ "Runtime cache status", "Состояние runtime-кэшей" ]
+SETTINGS_STATUS_LOADED = [ "Loaded", "Загружено" ]
+SETTINGS_STATUS_NOT_LOADED = [ "Not loaded", "Не загружено" ]
+SETTINGS_ACTION_READY = [ "No action has been performed yet.", "Действия ещё не выполнялись." ]
+SETTINGS_ACTION_WHISPER_RESET = [ "Whisper runtime cache has been reset.", "Runtime-кэш Whisper сброшен." ]
+SETTINGS_ACTION_WAV2VEC_RESET = [ "Wav2Vec2 runtime cache has been reset.", "Runtime-кэш Wav2Vec2 сброшен." ]
+SETTINGS_ACTION_PULSE_RESET = [ "PULSE runtime cache has been reset.", "Runtime-кэш PULSE сброшен." ]
+SETTINGS_ACTION_ALL_RESET = [ "All runtime caches have been reset.", "Все runtime-кэши сброшены." ]
+SETTINGS_ATTRIBUTION_CONTROLS_DESCRIPTION = [
+    "These settings are applied to the current Python session and affect the next analysis run. They are not written to config.toml.",
+    "Эти настройки применяются к текущей Python-сессии и влияют на следующий запуск анализа. Они не записываются в config.toml.",
+]
+SETTINGS_ACTION_ATTRIBUTION_APPLIED = [
+    "Attribution settings have been applied to the current session.",
+    "Настройки атрибуции применены к текущей сессии.",
+]
+SETTINGS_ACTION_SESSION_RESET = [
+    "Session settings have been reset to config.toml values.",
+    "Настройки сессии сброшены к значениям из config.toml.",
+]
+SETTINGS_ACTION_ERROR_PREFIX = [ "Error", "Ошибка" ]
+
+[Labels]
+AUDIO_INPUT = [ "Upload audio or record from microphone", "Загрузите аудио или запишите с микрофона" ]
+TASKS = [ "Tasks", "Задачи" ]
+EXAMPLES = [ "Examples", "Примеры" ]
+RUN_ANALYSIS = [ "Run analysis", "Запустить анализ" ]
+CLEAR = [ "Clear", "Очистить" ]
+PREDICTIONS = [ "Predictions", "Предсказания" ]
+HEATMAP = [ "Temporal importance heatmap", "Тепловая карта временной значимости" ]
+AUDIO_INFO_TITLE = [ "Audio information", "Информация об аудио" ]
+AUDIO_INFO_FILENAME = [ "Filename", "Имя файла" ]
+AUDIO_INFO_DURATION = [ "Duration", "Длительность" ]
+AUDIO_INFO_SAMPLE_RATE = [ "Sample rate", "Частота дискретизации" ]
+AUDIO_INFO_CHANNELS = [ "Channels", "Каналы" ]
+AUDIO_INFO_CODEC = [ "Codec", "Кодек" ]
+AUDIO_INFO_BIT_RATE = [ "Bit rate", "Битрейт" ]
+AUDIO_INFO_SIZE = [ "File size", "Размер файла" ]
+AUDIO_INFO_FORMAT = [ "Sample format", "Формат сэмплов" ]
+AUDIO_VALIDATION_TITLE = [ "Validation", "Проверка" ]
+AUDIO_VALIDATION_ERRORS = [ "Errors", "Ошибки" ]
+AUDIO_VALIDATION_WARNINGS = [ "Warnings", "Предупреждения" ]
+TRANSCRIPTION = [ "Transcription", "Транскрипция" ]
+RUNNING_ANALYSIS = [ "Analyzing ...", "Выполняется анализ ..." ]
+SETTINGS_REFRESH_STATUS = [ "Refresh status", "Обновить статус" ]
+SETTINGS_RESET_WHISPER = [ "Reset Whisper", "Сбросить Whisper" ]
+SETTINGS_RESET_WAV2VEC = [ "Reset Wav2Vec2", "Сбросить Wav2Vec2" ]
+SETTINGS_RESET_PULSE = [ "Reset PULSE", "Сбросить PULSE" ]
+SETTINGS_RESET_ALL = [ "Reset all caches", "Сбросить все кэши" ]
+SETTINGS_APPLY_ATTRIBUTION = [ "Apply attribution settings", "Применить настройки атрибуции" ]
+SETTINGS_RESET_SESSION = [ "Reset session settings to config.toml", "Сбросить настройки сессии к config.toml" ]
+TRANSCRIPTION_LANGUAGE = [ "Language", "Язык" ]
+TRANSCRIPTION_CONFIDENCE = [ "Confidence", "Уверенность" ]
+TRANSCRIPTION_DURATION = [ "Duration", "Длительность" ]
+TRANSCRIPTION_SEGMENTS = [ "Segments", "Сегменты" ]
+
+[Tasks]
+RESD = [ "Russian-based emotion recognition", "Распознавание эмоций на русском языке" ]
+MOSEI = [ "English-based emotion recognition", "Распознавание эмоций на английском языке" ]
+BAH = [ "Ambivalence recognition", "Распознавание амбивалентности" ]
+FIV2 = [ "Personality traits assessment", "Оценка персональных качеств личности" ]
+
+[Classes.RESD]
+ANGER = [ "Anger", "Гнев" ]
+DISGUST = [ "Disgust", "Отвращение" ]
+FEAR = [ "Fear", "Страх" ]
+HAPPINESS = [ "Happiness", "Радость" ]
+NEUTRAL = [ "Neutral", "Нейтральность" ]
+SADNESS = [ "Sadness", "Печаль" ]
+ENTHUSIASM = [ "Enthusiasm", "Воодушевление" ]
+
+[Classes.MOSEI]
+NEUTRAL = [ "Neutral", "Нейтральность" ]
+ANGER = [ "Anger", "Гнев" ]
+DISGUST = [ "Disgust", "Отвращение" ]
+FEAR = [ "Fear", "Страх" ]
+HAPPINESS = [ "Happiness", "Радость" ]
+SADNESS = [ "Sadness", "Печаль" ]
+SURPRISE = [ "Surprise", "Удивление" ]
+
+[Classes.BAH]
+ABSENCE = [ "Absence", "Отсутствие" ]
+PRESENCE = [ "Presence", "Наличие" ]
+
+[Classes.FIV2]
+EXTRAVERSION = [ "Extraversion", "Экстраверсия" ]
+AGREEABLENESS = [ "Agreeableness", "Доброжелательность" ]
+CONSCIENTIOUSNESS = [ "Conscientiousness", "Добросовестность" ]
+NEUROTICISM = [ "Non-Neuroticism", "Стрессоустойчивость" ]
+OPENNESS = [ "Openness", "Открытость опыту" ]
+
+[Logging]
+LEVEL = "INFO"
+FORMAT = "[%(levelname)s] %(name)s: %(message)s"
+
+[TranscriptionLanguageNames]
+AF = [ "Afrikaans", "Африкаанс" ]
+AM = [ "Amharic", "Амхарский" ]
+AR = [ "Arabic", "Арабский" ]
+AS = [ "Assamese", "Ассамский" ]
+AZ = [ "Azerbaijani", "Азербайджанский" ]
+BA = [ "Bashkir", "Башкирский" ]
+BE = [ "Belarusian", "Белорусский" ]
+BG = [ "Bulgarian", "Болгарский" ]
+BN = [ "Bengali", "Бенгальский" ]
+BO = [ "Tibetan", "Тибетский" ]
+BR = [ "Breton", "Бретонский" ]
+BS = [ "Bosnian", "Боснийский" ]
+CA = [ "Catalan", "Каталанский" ]
+CS = [ "Czech", "Чешский" ]
+CY = [ "Welsh", "Валлийский" ]
+DA = [ "Danish", "Датский" ]
+DE = [ "German", "Немецкий" ]
+EL = [ "Greek", "Греческий" ]
+EN = [ "English", "Английский" ]
+ES = [ "Spanish", "Испанский" ]
+ET = [ "Estonian", "Эстонский" ]
+EU = [ "Basque", "Баскский" ]
+FA = [ "Persian", "Персидский" ]
+FI = [ "Finnish", "Финский" ]
+FO = [ "Faroese", "Фарерский" ]
+FR = [ "French", "Французский" ]
+GL = [ "Galician", "Галисийский" ]
+GU = [ "Gujarati", "Гуджарати" ]
+HA = [ "Hausa", "Хауса" ]
+HAW = [ "Hawaiian", "Гавайский" ]
+HE = [ "Hebrew", "Иврит" ]
+HI = [ "Hindi", "Хинди" ]
+HR = [ "Croatian", "Хорватский" ]
+HT = [ "Haitian Creole", "Гаитянский креольский" ]
+HU = [ "Hungarian", "Венгерский" ]
+HY = [ "Armenian", "Армянский" ]
+ID = [ "Indonesian", "Индонезийский" ]
+IS = [ "Icelandic", "Исландский" ]
+IT = [ "Italian", "Итальянский" ]
+JA = [ "Japanese", "Японский" ]
+JW = [ "Javanese", "Яванский" ]
+KA = [ "Georgian", "Грузинский" ]
+KK = [ "Kazakh", "Казахский" ]
+KM = [ "Khmer", "Кхмерский" ]
+KN = [ "Kannada", "Каннада" ]
+KO = [ "Korean", "Корейский" ]
+LA = [ "Latin", "Латинский" ]
+LB = [ "Luxembourgish", "Люксембургский" ]
+LN = [ "Lingala", "Лингала" ]
+LO = [ "Lao", "Лаосский" ]
+LT = [ "Lithuanian", "Литовский" ]
+LV = [ "Latvian", "Латышский" ]
+MG = [ "Malagasy", "Малагасийский" ]
+MI = [ "Maori", "Маори" ]
+MK = [ "Macedonian", "Македонский" ]
+ML = [ "Malayalam", "Малаялам" ]
+MN = [ "Mongolian", "Монгольский" ]
+MR = [ "Marathi", "Маратхи" ]
+MS = [ "Malay", "Малайский" ]
+MT = [ "Maltese", "Мальтийский" ]
+MY = [ "Myanmar", "Бирманский" ]
+NE = [ "Nepali", "Непальский" ]
+NL = [ "Dutch", "Нидерландский" ]
+NN = [ "Nynorsk", "Нюнорск" ]
+NO = [ "Norwegian", "Норвежский" ]
+OC = [ "Occitan", "Окситанский" ]
+PA = [ "Punjabi", "Панджаби" ]
+PL = [ "Polish", "Польский" ]
+PS = [ "Pashto", "Пушту" ]
+PT = [ "Portuguese", "Португальский" ]
+RO = [ "Romanian", "Румынский" ]
+RU = [ "Russian", "Русский" ]
+SA = [ "Sanskrit", "Санскрит" ]
+SD = [ "Sindhi", "Синдхи" ]
+SI = [ "Sinhala", "Сингальский" ]
+SK = [ "Slovak", "Словацкий" ]
+SL = [ "Slovenian", "Словенский" ]
+SN = [ "Shona", "Шона" ]
+SO = [ "Somali", "Сомалийский" ]
+SQ = [ "Albanian", "Албанский" ]
+SR = [ "Serbian", "Сербский" ]
+SU = [ "Sundanese", "Сунданский" ]
+SV = [ "Swedish", "Шведский" ]
+SW = [ "Swahili", "Суахили" ]
+TA = [ "Tamil", "Тамильский" ]
+TE = [ "Telugu", "Телугу" ]
+TG = [ "Tajik", "Таджикский" ]
+TH = [ "Thai", "Тайский" ]
+TK = [ "Turkmen", "Туркменский" ]
+TL = [ "Tagalog", "Тагальский" ]
+TR = [ "Turkish", "Турецкий" ]
+TT = [ "Tatar", "Татарский" ]
+UK = [ "Ukrainian", "Украинский" ]
+UR = [ "Urdu", "Урду" ]
+UZ = [ "Uzbek", "Узбекский" ]
+VI = [ "Vietnamese", "Вьетнамский" ]
+YI = [ "Yiddish", "Идиш" ]
+YO = [ "Yoruba", "Йоруба" ]
+YUE = [ "Cantonese", "Кантонский" ]
+ZH = [ "Chinese", "Китайский" ]
+# Optional aliases for non-standard outputs
+ZH_CN = [ "Chinese", "Китайский" ]
+ZH_TW = [ "Chinese", "Китайский" ]
+PT_BR = [ "Portuguese", "Португальский" ]
+PT_PT = [ "Portuguese", "Португальский" ]
