@@ -1,0 +1,118 @@
+[paths]
+mosei_train_emb = "/path/to/mosei/train_embeddings.npz"
+mosei_train_csv = "/path/to/mosei/train_labels.csv"
+mosei_val_emb = "/path/to/mosei/val_embeddings.npz"
+mosei_val_csv = "/path/to/mosei/val_labels.csv"
+mosei_test_emb = "/path/to/mosei/test_embeddings.npz"
+mosei_test_csv = "/path/to/mosei/test_labels.csv"
+
+resd_train_emb = "/path/to/resd/train_embeddings.npz"
+resd_train_csv = "/path/to/resd/train_labels.csv"
+resd_test_emb = "/path/to/resd/test_embeddings.npz"
+resd_test_csv = "/path/to/resd/test_labels.csv"
+
+fiv2_train_emb = "/path/to/fiv2/train_embeddings.npz"
+fiv2_val_emb = "/path/to/fiv2/val_embeddings.npz"
+fiv2_test_emb = "/path/to/fiv2/test_embeddings.npz"
+fiv2_csv = "/path/to/fiv2/labels.csv"
+
+bah_emb = "/path/to/bah/embeddings.npz"
+bah_train_txt = "/path/to/bah/train.txt"
+bah_val_txt = "/path/to/bah/val.txt"
+bah_test_txt = "/path/to/bah/test.txt"
+
+checkpoint_dir = "./checkpoints"
+grid_search_log = "./grid_search.log"
+
+[data]
+active_datasets = ["mosei", "resd", "fiv2", "bah"]
+bah_txt_sep = ","
+bah_txt_id_field = 0
+bah_txt_label_field = 1
+
+[training]
+batch_size = 16
+eval_bs = 8
+num_epochs = 30
+early_stop_patience = 7
+lr = 1e-4
+device = "cuda" # "cuda", "cpu", "mps"
+selection_metric = "mean_all"
+label_smoothing = 0.1
+regression_loss_type = "mse" # "mse", "smoothl1", "logcosh"
+encoder_lr_mult = 1.0
+heads_lr_mult = 1.0
+
+[model]
+encoder_type = "mamba" # "mamba", "zeros", "transformer", "mhla"
+zeros_use_norm = true
+d_model = 256
+n_heads = 4
+num_layers = 4
+dim_feedforward = 1024
+dropout = 0.1
+max_len = 15000
+
+[mamba]
+mamba_d_state = 8
+mamba_d_conv = 3
+mamba_expand = 2
+
+[mhla]
+mhla_chunk_size = 64
+mhla_qk_norm = true
+mhla_transform = "linear"
+mhla_local_thres = 1.5
+mhla_exp_sigma = 3.0
+
+[mtl]
+mt_weight_method = "trace" # "trace", "stch", "autolambda", "taskgroup", "ntkmtl", "fairgrad", "none"
+mt_max_norm = 1.0
+
+[ntkmtl]
+ntk_exp = 0.5
+
+[taskgroup]
+group_decay = 1e-3
+group_regroup_interval = 50
+group_affinity_threshold = 0.0
+
+[fairgrad]
+fairgrad_alpha = 1.0
+
+[stch]
+stch_mu = 1.0 # 0.01, 0.1, 0.5, 1.0
+stch_warmup_epoch = 4
+
+[autolambda]
+autolambda_init = 0.1
+autolambda_lr = 1e-4
+autolambda_virtual_lr = 0.0 # 0.0 = current model optimizer LR
+autolambda_hessian_eps = 0.01
+autolambda_batch_size = 0 # 0 = batch_size
+autolambda_steps_per_epoch = 0 # 0 = max per-task train batches
+
+[trace]
+trace_warmup_ratio = 0.2
+trace_conflict_ratio = 0.7
+trace_refine_ratio = 0.9
+trace_recovery_shared_mult = 0.7
+trace_recovery_head_mult = 1.15
+trace_constraint_eta = 0.5
+trace_constraint_delta = 0.02
+trace_constraint_max_lambda = 2.0
+trace_constraint_weight_scale = 1.0
+trace_constraint_trigger_lambda = 0.1
+trace_constraint_decay = 0.95
+trace_constraint_normalize_weights = true
+
+[grid]
+mt_weight_method = ["autolambda"]
+encoder_type = ["transformer"]
+num_layers = [4]
+d_model = [128]
+batch_size = [8]
+label_smoothing = [0.3]
+autolambda_init = [0.1]
+autolambda_lr = [3e-4, 1e-4]
+autolambda_steps_per_epoch = [450, 500]
