@@ -1,4 +1,4 @@
-# PULSE
+# PULSE: Psychological Characteristics Unified Learning via Speech-based Estimation
 
 PULSE is an audio-based multi-task learning framework for joint affective and psychological state estimation from pre-extracted speech embeddings. A single shared encoder is trained with four task-specific heads on CMU-MOSEI, RESD, First Impressions V2, and BAH.
 
